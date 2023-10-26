@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "574289852353",
+    "project_id": "dplsearchmyphone",
+    "storage_bucket": "dplsearchmyphone.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:574289852353:android:a10a2b35aca0bcd71ea140",
+        "android_client_info": {
+          "package_name": "com.example.dplsearchmyphone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_lT-WUZbir53dMgIwxPIjRgXAxr65_o0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
