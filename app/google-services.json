@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "574289852353",
+    "firebase_url": "https://dplsearchmyphone-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "dplsearchmyphone",
     "storage_bucket": "dplsearchmyphone.appspot.com"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.example.dplsearchmyphone"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "574289852353-4s76ne90g24a3dhnj9jobkfcdovp14qv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dplsearchmyphone",
+            "certificate_hash": "7dd9e2db3cc0a660bdedc7d21ad479fc93a6fa2e"
+          }
+        },
+        {
+          "client_id": "574289852353-8m60hrfopvccha1b1o12t7dv3n9q1t3k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyC_lT-WUZbir53dMgIwxPIjRgXAxr65_o0"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "574289852353-8m60hrfopvccha1b1o12t7dv3n9q1t3k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
