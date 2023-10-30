@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 
 private val RC_SIGN_IN = 199504
@@ -15,6 +16,14 @@ class AuthentificationActivite : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.page_authentification)
+
+        FirebaseApp.initializeApp(this)
+        val providers = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
+        val authIntent = AuthUI.getInstance()
+            .createSignInIntentBuilder()
+            .setAvailableProviders(providers)
+            .build()
     }
 
     fun onLoginButtonClick(view: View) {

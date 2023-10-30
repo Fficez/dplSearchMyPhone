@@ -21,10 +21,10 @@
             android:label="Map Activity"
             android:exported="true"
             android:theme="@style/Theme.DplSearchMyPhone">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN"/>-->
+<!--                <category android:name="android.intent.category.LAUNCHER"/>-->
+<!--            </intent-filter>-->
         </activity>
         <activity
             android:name=".AuthentificationActivite"
@@ -40,10 +40,10 @@
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.DplSearchMyPhone">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
 
         <meta-data android:name="com.google.android.geo.API_KEY"
