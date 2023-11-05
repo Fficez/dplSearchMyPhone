@@ -88,8 +88,17 @@ class MapViewActivity : AppCompatActivity() {
                     val locationRef = FirebaseDatabase.getInstance().getReference("locations").child(userId ?: "")
                     val userLocation = userId?.let { LocationData(it, latitude, longitude) }
                     locationRef.setValue(userLocation)
-                        .addOnSuccessListener { Log.d("Firebase", "Data written successfully") }
+                        .addOnSuccessListener { Log.d("Firebase", "Data written successfully, $latitude, $longitude") }
                         .addOnFailureListener { Log.d("Firebase", "Data written failure") }
+
+                    val mapView = findViewById<MapView>(R.id.mapView)
+                    mapView.getMapAsync { googleMap ->
+                        val userLocatin = LatLng(latitude, longitude)
+                        googleMap.addMarker(
+                            MarkerOptions().position(userLocatin).title("My Location")
+                        )
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocatin, 15f))
+                    }
                 }
             }
         }
