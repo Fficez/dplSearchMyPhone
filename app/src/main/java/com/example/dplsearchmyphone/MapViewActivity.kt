@@ -116,35 +116,42 @@ class MapViewActivity : AppCompatActivity() {
 
     private fun iSeeDeadPeople() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
-        val locationRef = FirebaseDatabase.getInstance().reference.child("locations")
-        val acceptedUidsRef = userId?.let { locationRef.child(it).child("acceptedUids") }
+        Log.d("Firebase", "User provided access: $userId")
+        val locationRef = FirebaseDatabase.getInstance().reference
+        Log.d("Firebase", "User provided access: $locationRef")
+        val acceptedUidsRef = userId?.let { locationRef.child("acceptedUids").child(it).child("AcceptedUids") }
+        Log.d("Firebase", "User provided access: $acceptedUidsRef")
 
         acceptedUidsRef?.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for (childSnapshot in dataSnapshot.children) {
-                    if (childSnapshot.getValue(Boolean::class.java) == true) {
+                    val acceptedUid = childSnapshot.key
+                    val acceptedValue = childSnapshot.value
+
+                    if (acceptedValue is Boolean && acceptedValue) {
                         // Этот пользователь предоставил доступ
-                        val userUid = childSnapshot.key
-                        Toast.makeText(applicationContext, userUid, Toast.LENGTH_LONG).show()
+                        Log.d("Firebase", "User provided access: $acceptedUid")
+
                         // Получите данные о местоположении этого пользователя
-                        val userLocationRef = FirebaseDatabase.getInstance().reference
-                            .child("locations")
-                            .child(userUid ?: "")
+                        val userLocationRef = locationRef.child("locations").child(acceptedUid ?: "")
 
                         userLocationRef.addValueEventListener(object : ValueEventListener {
                             override fun onDataChange(userLocationDataSnapshot: DataSnapshot) {
+                                val latitude = userLocationDataSnapshot.child("latitude").getValue(Double::class.java)
+                                val longitude = userLocationDataSnapshot.child("longitude").getValue(Double::class.java)
 
-                                    val latitude = userLocationDataSnapshot.child("latitude").value as Double
-                                    val longitude = userLocationDataSnapshot.child("longitude").value as Double
-
+                                if (latitude != null && longitude != null) {
                                     // Создайте маркер на карте
-                                    val userLocation = LatLng(latitude, longitude)
-                                    val marker = MarkerOptions()
-                                        .position(userLocation)
-                                        .title(userUid)
-                                val mapView = findViewById<MapView>(R.id.mapView)
-                                mapView.getMapAsync { googleMap ->
-                                    googleMap.addMarker(marker)
+                                    Log.d("Firebase", "User Location: $latitude, $longitude")
+                                    val mapView = findViewById<MapView>(R.id.mapView)
+                                    mapView.getMapAsync { googleMap ->
+                                        // Создайте маркер на карте
+                                        val userLocation = LatLng(latitude, longitude)
+                                        val marker = MarkerOptions()
+                                            .position(userLocation)
+                                            .title(acceptedUid)
+                                        googleMap.addMarker(marker)
+                                    }
                                 }
                             }
 
