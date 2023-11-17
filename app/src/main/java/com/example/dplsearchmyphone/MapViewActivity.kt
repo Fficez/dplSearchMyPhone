@@ -36,6 +36,8 @@ private var previousMarker: Marker? = null
 private var routeCoordinates = mutableListOf<LatLng>()
 private val userCoordinatesMap = mutableMapOf<String, MutableList<LatLng>>()
 private val userMarkersMap = mutableMapOf<String, Marker?>()
+private val userRoutesMap = mutableMapOf<String, Polyline>()
+private val userLastCoordinatesMap = mutableMapOf<String, LatLng>()
 
 class MapViewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -180,6 +182,9 @@ class MapViewActivity : AppCompatActivity() {
 
                                 routeCoordinates.add(LatLng(latitude!!, longitude!!))
                                 val userLocation = LatLng(latitude, longitude)
+                                userRoutesMap[acceptedUid]?.remove()
+                                val routeCoordinates = coordinatesList ?: mutableListOf()
+                                routeCoordinates.add(userLocation)
 
                                 //if (latitude != null && longitude != null) {
                                 // Создайте маркер на карте
@@ -187,22 +192,20 @@ class MapViewActivity : AppCompatActivity() {
                                 val mapView = findViewById<MapView>(R.id.mapView)
                                 mapView.getMapAsync { googleMap ->
                                     //создать линию на карте
-                                        if (::polyline.isInitialized) {
-                                            polyline.remove()
-                                        }
-                                        polyline = googleMap.addPolyline(PolylineOptions().addAll(routeCoordinates).color(
-                                            Color.BLUE))
-
-                                    //Линии для каждого пчелика
-                                    if (coordinatesList != null && coordinatesList.size > 1) {
-                                        polyline = googleMap.addPolyline(
-                                            PolylineOptions().addAll(coordinatesList).color(
-                                                Color.BLUE
-                                            )
-                                        )
+                                    val lastCoordinates = userLastCoordinatesMap[acceptedUid]
+                                    if (lastCoordinates != null) {
+                                        userRoutesMap[acceptedUid]?.remove()
                                     }
-                                    //Для каждого
-
+                                        //Линии для каждого пчелика
+                                    if (userLocation != null && lastCoordinates != null) {
+                                        val polyline = googleMap.addPolyline(
+                                            PolylineOptions().add(lastCoordinates, userLocation)
+                                                .color(Color.BLUE)
+                                        )
+                                        userRoutesMap[acceptedUid ?: ""] = polyline
+                                        //Для каждого
+                                        userRoutesMap[acceptedUid ?: ""] = polyline
+                                    }
                                     // Создайте маркер на карте
                                     if (!userMarkersMap.containsKey(acceptedUid)) {
                                         val userLocation = LatLng(latitude, longitude)
