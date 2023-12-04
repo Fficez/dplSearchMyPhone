@@ -42,6 +42,7 @@
             android:theme="@style/Theme.DplSearchMyPhone">
         </activity>
         <activity android:name=".AddNewPeopleActivity"/>
+        <activity android:name=".UserListActivity"/>
 
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCeHwi7uKa5LUXjbrT4GSsoySv5UtJWecQ" />

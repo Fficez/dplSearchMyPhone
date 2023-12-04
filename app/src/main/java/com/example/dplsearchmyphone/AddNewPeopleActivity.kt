@@ -29,8 +29,12 @@ class AddNewPeopleActivity : AppCompatActivity() {
     fun buttonClickAddUids(view: View) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         val refUid = findViewById<EditText>(R.id.refsUidText)
+        //val fieldName = findViewById<EditText>(R.id.addNameField)
         val userInput = refUid.text.toString()
+        //val nameInput = fieldName.text.toString()
         val uidDataBase = FirebaseDatabase.getInstance().getReference("acceptedUids").child(userId ?: "").child("AcceptedUids")
         uidDataBase.child(userInput).setValue(true)
+        //val nameUidDataBase = FirebaseDatabase.getInstance().getReference("acceptedUids").child(userId ?: "").child("AcceptedUids").child(userInput).child("name")
+        //nameUidDataBase.child(nameInput).setValue(nameInput)
     }
 }

@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.model.LatLng
@@ -38,7 +40,8 @@ private val userCoordinatesMap = mutableMapOf<String, MutableList<LatLng>>()
 private val userMarkersMap = mutableMapOf<String, Marker?>()
 private val userRoutesMap = mutableMapOf<String, Polyline>()
 private val userLastCoordinatesMap = mutableMapOf<String, LatLng>()
-
+private val googleMap: GoogleMap? = null
+private val userRouteMap: MutableMap<String, Polyline> = HashMap()
 class MapViewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,23 +63,23 @@ class MapViewActivity : AppCompatActivity() {
         val serviceIntent = Intent(this, LocationServices::class.java)
         ContextCompat.startForegroundService(this, serviceIntent)
 
-//        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-//        {
-//            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-//                if (location != null) {
-//                    val latitude = location.latitude
-//                    val longitude = location.longitude
-//                    mapView.getMapAsync { googleMap ->
-//                        val userLocation = LatLng(latitude, longitude)
-//                        googleMap.addMarker(
-//                            MarkerOptions().position(userLocation).title("My Location")
-//                        )
-//                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15f))
-//                    }
-//                }
-//            }
-//        }
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    val latitude = location.latitude
+                    val longitude = location.longitude
+                    mapView.getMapAsync { googleMap ->
+                        val userLocation = LatLng(latitude, longitude)
+                        googleMap.addMarker(
+                            MarkerOptions().position(userLocation).title("My Location")
+                        )
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15f))
+                    }
+                }
+            }
+        }
     }
 
     private fun setupLocationUpdates() {
@@ -86,7 +89,7 @@ class MapViewActivity : AppCompatActivity() {
             override fun run() {
                 updateLocationToFirebase()
                 iSeeDeadPeople()
-                handler.postDelayed(this, 5000)
+                handler.postDelayed(this, 1000)
             }
         }
         locationUpdateRunnable.run()
@@ -142,7 +145,7 @@ class MapViewActivity : AppCompatActivity() {
 
     private fun iSeeDeadPeople() {
 
-        routeCoordinates.clear()
+        //routeCoordinates.clear()
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         Log.d("Firebase", "User provided access: $userId")
         val locationRef = FirebaseDatabase.getInstance().reference
@@ -183,9 +186,13 @@ class MapViewActivity : AppCompatActivity() {
                                 routeCoordinates.add(LatLng(latitude!!, longitude!!))
                                 val userLocation = LatLng(latitude, longitude)
                                 userRoutesMap[acceptedUid]?.remove()
-                                val routeCoordinates = coordinatesList ?: mutableListOf()
-                                routeCoordinates.add(userLocation)
+                                val acceptedUid = userLocationDataSnapshot.key ?: ""
 
+                                updateRouteForUser(acceptedUid, userLocation)
+
+                                /*val routeCoordinates = coordinatesList ?: mutableListOf()
+                                routeCoordinates.add(userLocation)
+                                Log.d("ROUTECOORDINATES", "ALL COORDINATES: $routeCoordinates")
                                 //if (latitude != null && longitude != null) {
                                 // Создайте маркер на карте
                                 Log.d("Firebase", "User Location: $latitude, $longitude")
@@ -219,7 +226,7 @@ class MapViewActivity : AppCompatActivity() {
                                         userMarker?.position = userLocation
 
                                     }
-                                }
+                                }*/
                             }
 
 
@@ -235,6 +242,46 @@ class MapViewActivity : AppCompatActivity() {
                 // Обработка ошибки
             }
         })
+    }
+
+    private fun updateRouteForUser(acceptedUid: String, userLocation: LatLng) {
+        val mapView = findViewById<MapView>(R.id.mapView)
+        mapView.getMapAsync { googleMap ->
+            val lastCoordinates = userLastCoordinatesMap[acceptedUid]
+            val coordinatesList = userCoordinatesMap[acceptedUid ?: ""]
+            // Удаление старой полилинии
+            userRoutesMap[acceptedUid]?.remove()
+
+            // Добавление новой координаты в маршрут
+            val routeCoordinates = coordinatesList ?: mutableListOf()
+            routeCoordinates.add(userLocation)
+
+            // Добавление новой полилинии на карту
+            if (lastCoordinates != null) {
+                val polyline = googleMap.addPolyline(
+                    PolylineOptions().add(lastCoordinates, userLocation)
+                        .color(Color.BLUE)
+                )
+                userRoutesMap[acceptedUid] = polyline
+            }
+
+            // Обновление маркера на карте
+            if (!userMarkersMap.containsKey(acceptedUid)) {
+                val marker = googleMap.addMarker(
+                    MarkerOptions().position(userLocation)
+                        .title(acceptedUid)
+                )
+                userMarkersMap[acceptedUid] = marker
+            } else {
+                val userMarker = userMarkersMap[acceptedUid]
+                userMarker?.position = userLocation
+            }
+        }
+    }
+
+    fun onClickShowAllPeople(view: View) {
+        val mapIntent = Intent(this, UserListActivity::class.java)
+        startActivity(mapIntent)
     }
 
 }
