@@ -1,27 +1,26 @@
 package com.example.dplsearchmyphone
 
+//import android.location.LocationRequest
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
-//import android.location.LocationRequest
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.Polyline
@@ -59,30 +58,24 @@ class MapViewActivity : AppCompatActivity() {
         mapView.onCreate(savedInstanceState)
         mapView.onResume()
 
-        setupLocationUpdates()
+        //Добавить кнопки зума
+        mapView.getMapAsync { googleMap ->
+            //Приближение карты минска
+            val cityBounds = LatLngBounds(
+                LatLng(53.825495, 27.340865),
+                LatLng(53.986034, 27.738183)
+            )
+            val padding = 10
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(cityBounds, padding))
+            googleMap.uiSettings.isZoomControlsEnabled = true
+        }
 
+        setupLocationUpdates()
         try {
             MapsInitializer.initialize(applicationContext)
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
-        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                if (location != null) {
-                    val latitude = location.latitude
-                    val longitude = location.longitude
-                    mapView.getMapAsync { googleMap ->
-                        val userLocation = LatLng(latitude, longitude)
-                        googleMap.addMarker(
-                            MarkerOptions().position(userLocation).title("My Location")
-                        )
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15f))
-                    }
-                }
-            }
-        }*/
         startLocationUpdates()
     }
 
@@ -118,7 +111,11 @@ class MapViewActivity : AppCompatActivity() {
                                 if (otherLatitude != null && otherLongitude != null) {
                                     val otherUserLocation = LatLng(otherLatitude, otherLongitude)
                                     // Вызываем функцию для обновления карты для другого пользователя
-                                    updateRouteForUser(acceptedUid ?: "", otherUserLocation)
+                                    updateRouteForUser(
+                                        acceptedUid ?: "",
+                                        otherUserLocation,
+                                        userId ?: ""
+                                    )
                                 }
                             }
 
@@ -137,70 +134,96 @@ class MapViewActivity : AppCompatActivity() {
 
         // Добавляем слушатель изменений для своих координат
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
 
-        fusedLocationClient.requestLocationUpdates(
-            LocationRequest.create(),
-            object : LocationCallback() {
-                override fun onLocationResult(locationResult: LocationResult) {
-                    super.onLocationResult(locationResult)
-                    val location = locationResult.lastLocation
-                    if (location != null) {
-                        val latitude = location.latitude
-                        val longitude = location.longitude
-                        val userLocation = LatLng(latitude, longitude)
+            fusedLocationClient.requestLocationUpdates(
+                LocationRequest.create(),
+                object : LocationCallback() {
+                    override fun onLocationResult(locationResult: LocationResult) {
+                        super.onLocationResult(locationResult)
+                        val location = locationResult.lastLocation
+                        if (location != null) {
+                            val latitude = location.latitude
+                            val longitude = location.longitude
+                            val userLocation = LatLng(latitude, longitude)
 
-                        // Обновляем координаты в базе данных
-                        userLocationRef.setValue(LocationData(userId ?: "", latitude, longitude))
-                            .addOnSuccessListener {
-                                Log.d("Firebase", "hi my name is")
-                            }
-                            .addOnFailureListener {
-                                Log.e("Firebase", "Failed to update user location")
-                            }
+                            // Обновляем координаты в базе данных
+                            userLocationRef.setValue(
+                                LocationData(
+                                    userId ?: "",
+                                    latitude,
+                                    longitude
+                                )
+                            )
+                                .addOnSuccessListener {
+                                    Log.d("Firebase", "hi my name is")
+                                }
+                                .addOnFailureListener {
+                                    Log.e("Firebase", "Failed to update user location")
+                                }
 
-                        // Вызываем функцию для обновления карты для себя
-                        updateRouteForUser(userId ?: "", userLocation)
+                            // Вызываем функцию для обновления карты для себя
+                            updateRouteForUser(userId ?: "", userLocation, userId ?: "")
+                        }
+                    }
+                },
+                null
+            )
+        }
+    }
+
+    private fun updateRouteForUser(acceptedUid: String, userLocation: LatLng, userUid: String) {
+        val mapView = findViewById<MapView>(R.id.mapView)
+        //получение Name
+        val databaseReference: DatabaseReference =
+            FirebaseDatabase.getInstance().getReference("named").child(userUid).child(acceptedUid)
+                .child("name")
+        databaseReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val name: String? = dataSnapshot.getValue(String::class.java)
+
+                mapView.getMapAsync { googleMap ->
+                    val lastCoordinates = userCoordinatesMap[acceptedUid]?.lastOrNull()
+
+                    // Добавление новой координаты в маршрут
+                    val routeCoordinates =
+                        userCoordinatesMap.getOrPut(acceptedUid) { mutableListOf() }
+                    routeCoordinates.add(userLocation)
+
+                    // Добавление новой полилинии на карту
+                    if (lastCoordinates != null) {
+                        val polyline = googleMap.addPolyline(
+                            PolylineOptions().add(lastCoordinates, userLocation)
+                                .color(Color.BLUE)
+                        )
+                        userRoutesMap[acceptedUid] = polyline
+                    }
+
+                    // Обновление маркера на карте
+                    if (!userMarkersMap.containsKey(acceptedUid)) {
+                        val marker = googleMap.addMarker(
+                            MarkerOptions().position(userLocation)
+                                .title(name)
+                        )
+                        userMarkersMap[acceptedUid] = marker
+                    } else {
+                        val userMarker = userMarkersMap[acceptedUid]
+                        userMarker?.position = userLocation
                     }
                 }
-            },
-            null
-        )
-    }
-}
 
-    private fun updateRouteForUser(acceptedUid: String, userLocation: LatLng) {
-        val mapView = findViewById<MapView>(R.id.mapView)
-        mapView.getMapAsync { googleMap ->
-            val lastCoordinates = userCoordinatesMap[acceptedUid]?.lastOrNull()
-            // Удаление старой полилинии
-            //userRoutesMap[acceptedUid]?.remove()
-
-            // Добавление новой координаты в маршрут
-            val routeCoordinates = userCoordinatesMap.getOrPut(acceptedUid) { mutableListOf() }
-            routeCoordinates.add(userLocation)
-
-            // Добавление новой полилинии на карту
-            if (lastCoordinates != null) {
-                val polyline = googleMap.addPolyline(
-                    PolylineOptions().add(lastCoordinates, userLocation)
-                        .color(Color.BLUE)
-                )
-                userRoutesMap[acceptedUid] = polyline
             }
 
-            // Обновление маркера на карте
-            if (!userMarkersMap.containsKey(acceptedUid)) {
-                val marker = googleMap.addMarker(
-                    MarkerOptions().position(userLocation)
-                        .title(acceptedUid)
-                )
-                userMarkersMap[acceptedUid] = marker
-            } else {
-                val userMarker = userMarkersMap[acceptedUid]
-                userMarker?.position = userLocation
+            override fun onCancelled(error: DatabaseError) {
+                println("Ошибка получения из бд")
             }
-        }
+        })
+
+
     }
 
     private fun startLocationUpdates() {
@@ -216,7 +239,11 @@ class MapViewActivity : AppCompatActivity() {
         val userLocationRef: DatabaseReference =
             database.getReference("locations").child(userId ?: "")
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
                 if (location != null) {
                     val latitude = location.latitude
@@ -224,7 +251,7 @@ class MapViewActivity : AppCompatActivity() {
                     val userLocation = LatLng(latitude, longitude)
                     userLocationRef.setValue(LocationData(userId ?: "", latitude, longitude))
                         .addOnSuccessListener {
-                            updateRouteForUser(userId ?: "", userLocation)
+                            //updateRouteForUser(userId ?: "", userLocation, userId ?: "")
                             Log.d("Firebase", "User location updated successfully")
                         }
                         .addOnFailureListener {
@@ -233,11 +260,6 @@ class MapViewActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    fun onClickShowAllPeople(view: View) {
-        val mapIntent = Intent(this, UserListActivity::class.java)
-        startActivity(mapIntent)
     }
 
     fun onAddPeopleClick(view: View) {
