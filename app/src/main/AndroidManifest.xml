@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <application
         android:allowBackup="true"
@@ -47,7 +49,9 @@
 
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCeHwi7uKa5LUXjbrT4GSsoySv5UtJWecQ" />
-        <service android:name=".LocationService" />
+        <service android:name=".LocationForegroundService"
+            android:enabled="true"
+            android:exported="false"/>
     </application>
 
 </manifest>

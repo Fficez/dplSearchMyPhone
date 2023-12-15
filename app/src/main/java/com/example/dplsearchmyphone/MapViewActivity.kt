@@ -1,6 +1,5 @@
 package com.example.dplsearchmyphone
 
-//import android.location.LocationRequest
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,6 +11,7 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -36,11 +36,12 @@ import com.google.firebase.database.ValueEventListener
 class MapViewActivity : AppCompatActivity() {
 
     private val locationUpdateHandler = Handler()
-    private val locationUpdateInterval = 3000L
+    private val locationUpdateInterval = 5000L
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     private val userCoordinatesMap = mutableMapOf<String, MutableList<LatLng>>()
     private val userMarkersMap = mutableMapOf<String, Marker?>()
     private val userRoutesMap = mutableMapOf<String, Polyline>()
+    private val MY_PERMISSIONS_REQUEST_FOREGROUND_SERVICE = 1
 
     private val updateLocationRunnable = object : Runnable {
         override fun run() {
@@ -52,6 +53,9 @@ class MapViewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
+
+       val serviceIntent = Intent(this, LocationForegroundService::class.java)
+       ContextCompat.startForegroundService(this, serviceIntent)
 
         setContentView(R.layout.activity_map_view)
         val mapView = findViewById<MapView>(R.id.mapView)
@@ -248,11 +252,10 @@ class MapViewActivity : AppCompatActivity() {
                 if (location != null) {
                     val latitude = location.latitude
                     val longitude = location.longitude
-                    val userLocation = LatLng(latitude, longitude)
                     userLocationRef.setValue(LocationData(userId ?: "", latitude, longitude))
                         .addOnSuccessListener {
                             //updateRouteForUser(userId ?: "", userLocation, userId ?: "")
-                            Log.d("Firebase", "User location updated successfully")
+                            Log.d("Firebase", "User location updated successfully THIS")
                         }
                         .addOnFailureListener {
                             Log.e("Firebase", "Failed to update user location")
@@ -268,8 +271,10 @@ class MapViewActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        val serviceIntent = Intent(this, LocationForegroundService::class.java)
+        stopService(serviceIntent)
+        finishAffinity()
         super.onDestroy()
-        stopLocationUpdates()
     }
 
 }
