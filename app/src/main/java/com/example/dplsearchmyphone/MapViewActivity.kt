@@ -277,4 +277,9 @@ class MapViewActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    fun controlLocationClickButton(view: View) {
+        val mapIntent = Intent(this, ControlLocation::class.java)
+        startActivity(mapIntent)
+    }
+
 }

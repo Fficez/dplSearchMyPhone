@@ -46,6 +46,7 @@
         </activity>
         <activity android:name=".AddNewPeopleActivity"/>
         <activity android:name=".UserListActivity"/>
+        <activity android:name=".ControlLocation"/>
 
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCeHwi7uKa5LUXjbrT4GSsoySv5UtJWecQ" />

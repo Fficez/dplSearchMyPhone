@@ -80,7 +80,7 @@ class AddNewPeopleActivity : AppCompatActivity() {
                 override fun onCancelled(error: DatabaseError) {
                     Toast.makeText(
                         applicationContext,
-                        "Ошибкапроверки пользователя, повторите позже",
+                        "Ошибка проверки пользователя, повторите позже",
                         Toast.LENGTH_LONG
                     ).show()
                 }
