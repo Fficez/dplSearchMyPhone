@@ -17,13 +17,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.DplSearchMyPhone"
+        android:theme="@style/AppThemeMaterialComponent"
         tools:targetApi="31">
         <activity
             android:name=".MapViewActivity"
             android:label="Map Activity"
             android:exported="true"
-            android:theme="@style/Theme.DplSearchMyPhone">
+            android:theme="@style/AppThemeMaterialComponent">
 <!--            <intent-filter>-->
 <!--                <action android:name="android.intent.action.MAIN"/>-->
 <!--                <category android:name="android.intent.category.LAUNCHER"/>-->
@@ -33,7 +33,7 @@
             android:name=".AuthentificationActivite"
             android:label="Authentification Activity"
             android:exported="true"
-            android:theme="@style/Theme.DplSearchMyPhone">
+            android:theme="@style/AppThemeMaterialComponent">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -42,11 +42,13 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.DplSearchMyPhone">
+            android:theme="@style/AppThemeMaterialComponent">
         </activity>
-        <activity android:name=".AddNewPeopleActivity"/>
+        <activity android:name=".AddNewPeopleActivity"
+            android:theme="@style/AppThemeMaterialComponentWithActionBar"/>
         <activity android:name=".UserListActivity"/>
-        <activity android:name=".ControlLocation"/>
+        <activity android:name=".ControlLocation"
+            android:theme="@style/AppThemeMaterialComponentWithActionBar"/>
 
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCeHwi7uKa5LUXjbrT4GSsoySv5UtJWecQ" />

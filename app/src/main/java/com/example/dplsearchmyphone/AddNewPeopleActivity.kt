@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.dplsearchmyphone.R.color
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -22,6 +23,7 @@ class AddNewPeopleActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.add_new_people)
+        supportActionBar?.title = getString(R.string.add_new_user)
         val auth = FirebaseAuth.getInstance()
 
         if (auth.currentUser != null) {
@@ -36,8 +38,8 @@ class AddNewPeopleActivity : AppCompatActivity() {
 
     fun buttonClickAddUids(view: View) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
-        val refUid = findViewById<EditText>(R.id.refsUidText)
-        val fieldName = findViewById<EditText>(R.id.addNameField)
+        val refUid = findViewById<TextInputEditText>(R.id.refsUidText)
+        val fieldName = findViewById<TextInputEditText>(R.id.addNameField)
         val userInput = refUid.text.toString()
         val nameInput = fieldName.text.toString()
         //Проверка что бы в поле Name было написано хоть что-то

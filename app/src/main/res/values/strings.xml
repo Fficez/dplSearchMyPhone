@@ -3,4 +3,10 @@
     <string name="OpenAddActivity">Add New</string>
     <string name="switch_button">Доступ к данным о местоположении</string>
     <string name="settings">Settings</string>
+    <string name="write_uid">Введите Uid пользователя</string>
+    <string name="write_name">Введите имя пользователя</string>
+    <string name="Enter">Войти</string>
+    <string name="Authorization">Авторизация</string>
+    <string name="add_new_user">Добавление пользователя</string>
+    <string name="Add">Добавить</string>
 </resources>

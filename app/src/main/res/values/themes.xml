@@ -2,4 +2,9 @@
 <resources>
 
     <style name="Theme.DplSearchMyPhone" parent="Theme.AppCompat.Light.NoActionBar" />
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar"/>
+    <style name="AppThemeLight" parent="Theme.MaterialComponents.Light.NoActionBar"/>
+    <style name="AppThemeDark" parent="Theme.MaterialComponents.Light.NoActionBar"/>
+    <style name="AppThemeMaterialComponent" parent="Theme.MaterialComponents.NoActionBar"/>
+    <style name="AppThemeMaterialComponentWithActionBar" parent="Theme.MaterialComponents"/>
 </resources>

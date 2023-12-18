@@ -23,6 +23,7 @@ class ControlLocation : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.control_location_view)
+        supportActionBar?.title = "Настройки"
         val mySwitch: Switch = findViewById(R.id.switch_control_location)
         val userId = FirebaseAuth.getInstance().currentUser!!.uid
         val isChecked: Boolean = mySwitch.isChecked
@@ -53,7 +54,11 @@ class ControlLocation : AppCompatActivity() {
                     }
 
                     override fun onCancelled(databaseError: DatabaseError) {
-                        // Обработка ошибок, если не удалось получить данные
+                        Toast.makeText(
+                            applicationContext,
+                            "Ошибка проверки пользователя, повторите позже",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 })
 
@@ -81,7 +86,11 @@ class ControlLocation : AppCompatActivity() {
                     }
 
                     override fun onCancelled(databaseError: DatabaseError) {
-                        // Обработка ошибок, если не удалось получить данные
+                        Toast.makeText(
+                            applicationContext,
+                            "Ошибка проверки пользователя, повторите позже",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 })
             }

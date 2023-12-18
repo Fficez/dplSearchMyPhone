@@ -16,24 +16,28 @@
         app:layout_constraintTop_toTopOf="parent"
         app:liteMode="false" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/round_button"
+        android:drawableStart="@drawable/baseline_add_24"
         android:onClick="onAddPeopleClick"
-        android:text="@string/OpenAddActivity"
+        android:padding="8dp"
+        android:text=""
         app:layout_constraintBottom_toBottomOf="@+id/mapView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/control_location"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="24dp"
         android:background="@drawable/round_button"
-        android:drawableStart="@drawable/ic_notification_icon"
+        android:drawableStart="@drawable/settings_black_vector_icon"
         android:gravity="left"
         android:onClick="controlLocationClickButton"
         android:padding="8dp"
