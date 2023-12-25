@@ -1,0 +1,95 @@
+@startuml
+class com.example.dplsearchmyphone.User {
+}
+class com.example.dplsearchmyphone.AddNewPeopleActivity {
+- FirebaseDatabase databaseAllUsers
++ void onCreate(Bundle?)
++ void buttonClickAddUids(View)
+}
+class com.example.dplsearchmyphone.MapViewActivity {
+-  locationUpdateHandler
+-  locationUpdateInterval
+- FirebaseDatabase database
+-  userCoordinatesMap
+-  userMarkersMap
+-  userRoutesMap
+-  MY_PERMISSIONS_REQUEST_FOREGROUND_SERVICE
+-  updateLocationRunnable
++ void onCreate(Bundle?)
+- void setupLocationUpdates()
+- void updateRouteForUser(String,LatLng,String)
+- void startLocationUpdates()
+- void stopLocationUpdates()
+- void updateMyLocation()
++ void onAddPeopleClick(View)
++ void onDestroy()
++ void controlLocationClickButton(View)
+}
+class com.example.dplsearchmyphone.AuthentificationActivite {
+-  REQUEST_LOCATION_PERMISSION
+-  REQUEST_NOTIFICATION_PERMISSION
++ void onCreate(Bundle?)
++ void onLoginButtonClick(View)
++ void onActivityResult(Int,Int,Intent?)
++ void onRequestPermissionsResult(void,Int,void,Array<out String>,void,IntArray)
++ void null()
+- void checkBackgroundLocationPermission()
+- void showBackgroundLocationRationale()
+}
+class com.example.dplsearchmyphone.LocationForegroundService {
+-  locationUpdateHandler
+-  locationUpdateInterval
+- FusedLocationProviderClient fusedLocationClient
+-  updateLocationRunnable
++ void onCreate()
+- void createNotificationChannel()
++ Boolean stopService(Intent?)
+- Notification createNotification()
++ Int onStartCommand(Intent?,Int,Int)
++ void onDestroy()
++ IBinder? onBind(Intent?)
+- void startLocationUpdates()
+- void stopLocationUpdates()
+- void updateMyLocation()
+- Boolean checkLocationPermission()
+}
+class com.example.dplsearchmyphone.UserAdapter {
+}
+class com.example.dplsearchmyphone.ViewHolder {
++ TextView UserNameTextView
+}
+class com.example.dplsearchmyphone.UserListActivity {
+- ListView usersListView
+- ArrayAdapter<String> usersAdapter
++ void onCreate(Bundle?)
+- void startUserListTracking()
+}
+class com.example.dplsearchmyphone.LocationData {
+}
+class com.example.dplsearchmyphone.MainActivity {
++ void onCreate(Bundle?)
+}
+class com.example.dplsearchmyphone.ControlLocation {
+- FirebaseDatabase database
++ void onCreate(Bundle?)
+- void change()
+}
+class com.example.dplsearchmyphone.LocationService {
+-  TAG
++ IBinder? onBind(Intent)
++ Int onStartCommand(Intent?,Int,Int)
+- void startLocationUpdates()
+}
+
+
+androidx.appcompat.app.AppCompatActivity <|-- com.example.dplsearchmyphone.AddNewPeopleActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.dplsearchmyphone.MapViewActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.dplsearchmyphone.AuthentificationActivite
+android.app.Service <|-- com.example.dplsearchmyphone.LocationForegroundService
+
+com.example.dplsearchmyphone.ViewHolder <|-- com.example.dplsearchmyphone.ViewHolder
+androidx.appcompat.app.AppCompatActivity <|-- com.example.dplsearchmyphone.UserListActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.dplsearchmyphone.MainActivity
+androidx.appcompat.app.AppCompatActivity <|-- com.example.dplsearchmyphone.ControlLocation
+android.app.Service <|-- com.example.dplsearchmyphone.LocationService
+@enduml
