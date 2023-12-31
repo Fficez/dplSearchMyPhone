@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -61,7 +62,7 @@ class MapViewActivity : AppCompatActivity() {
         val mapView = findViewById<MapView>(R.id.mapView)
         mapView.onCreate(savedInstanceState)
         mapView.onResume()
-
+        checkAndAddMyDataInDB()
         //Добавить кнопки зума
         mapView.getMapAsync { googleMap ->
             //Приближение карты минска
@@ -282,4 +283,21 @@ class MapViewActivity : AppCompatActivity() {
         startActivity(mapIntent)
     }
 
+    private fun checkAndAddMyDataInDB() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        val acceptedUidsRef: DatabaseReference =
+            database.getReference("acceptedUids").child(userId ?: "").child("AcceptedUids")
+        val name = "user"
+                    //добавление UID в бд
+                    val uidDataBase =
+                        FirebaseDatabase.getInstance().getReference("acceptedUids")
+                            .child(userId ?: "")
+                            .child("AcceptedUids")
+                    uidDataBase.child(userId!!).setValue(true)
+                    //добавление имени в ветку бд named
+                    val nameUidDataBase =
+                        FirebaseDatabase.getInstance().getReference("named").child(userId ?: "")
+                            .child(userId).child("name")
+                    nameUidDataBase.setValue(name)
+    }
 }
