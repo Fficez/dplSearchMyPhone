@@ -3,7 +3,7 @@
     "project_number": "574289852353",
     "firebase_url": "https://dplsearchmyphone-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "dplsearchmyphone",
-    "storage_bucket": "dplsearchmyphone.appspot.com"
+    "storage_bucket": "dplsearchmyphone.firebasestorage.app"
   },
   "client": [
     {
